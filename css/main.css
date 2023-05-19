@@ -1,0 +1,27 @@
+body {
+    padding: 0;
+    margin: 0;
+}
+
+#board {
+    background-color: rgb(161, 71, 40);
+    height: 100vh;
+    position: relative;
+}
+
+#door {
+    background-color: black;
+    height: 10vh;
+    width: 4vw;
+    position: absolute;
+    right: 0;
+    bottom: 10vh;
+}
+
+.floor {
+    background-color: brown;
+    height: 10vh;
+    width: 100vw;
+    position: absolute;
+    bottom: 0;
+}
