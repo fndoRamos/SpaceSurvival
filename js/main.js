@@ -4,6 +4,7 @@ class Game {
     this.newGround = null;
     this.newEnemy = null;
     this.exitDoor = null;
+    this.bulletsArr = [];
 
     this.startGame();
   }
@@ -15,12 +16,28 @@ class Game {
     this.exitDoor = new ExitDoor();
 
     this.eventListenerMove();
+
+    setTimeout(() => {
+      setInterval(() => {
+        this.newBullet = new Bullets();
+        this.bulletsArr.push(this.newBullet);
+        console.log(this.bulletsArr);
+      }, 4000);
+    }, 2500);
+
+    setInterval(() => {
+      this.bulletsArr.forEach((bulletElm) => {
+        bulletElm.moveDown(this.newPlayer.positionX, this.newPlayer.positionY);
+      })
+    }, 60);
+
   }
 
   eventListenerMove() {
     document.addEventListener("keydown", (e) => {
       if (e.code === "ArrowRight") {
         this.newPlayer.moveRigth();
+        console.log(this.newPlayer);
         this.detectColisionExitDoor();
       } else if (e.code === "ArrowLeft") {
         this.newPlayer.moveLeft();
@@ -117,7 +134,7 @@ class Enemy {
     this.height = 4;
     this.positionX = 50 - this.width / 2;
     this.positionY = 100 - this.height;
-    this.bulletsArr = [];
+    this.enemyDom = null;
 
     this.createEnemy();
   }
@@ -133,7 +150,7 @@ class Enemy {
       this.enemyDom.innerText = "E";
       this.enemyParent = document.getElementById("board");
       this.enemyParent.appendChild(this.enemyDom);
-    }, 5000);
+    }, 3000);
 
     clearTimeout = enemyTimeOutID;
 
@@ -143,20 +160,46 @@ class Enemy {
         this.enemyDom.style.bottom = this.positionY + "vh";
       }
     }, 100);
-    this.enemyShoot();
+  }
+}
+
+class Bullets {
+  constructor() {
+    this.width = 1;
+    this.height = 2;
+    this.positionX = 50 - this.width / 2;
+    this.positionY = 78;
+    this.bulletDom = null;
+
+    this.createBullets();
   }
 
-  enemyShoot() {
-    setTimeout(() => {
-      this.bulletDom = document.createElement("div");
-      this.bulletDom.className = "bullet";
-      this.bulletDom.style.height = 2 + "vh";
-      this.bulletDom.style.width = 2 + "vw";
-      this.bulletDom.style.left = this.positionX + this.width / 2 - 1 + "vw";
-      this.bulletDom.style.bottom = 78 + "vh";
-      this.enemyParent.appendChild(this.bulletDom);
-      this.bulletsArr.push(this.bulletDom);
-    }, 7000);
+  createBullets() {
+    this.bulletDom = document.createElement("div");
+    this.bulletDom.className = "bullet";
+    this.bulletDom.style.height = this.height + "vh";
+    this.bulletDom.style.width = this.width + "vw";
+    this.bulletDom.style.left = this.positionX + "vw";
+    this.bulletDom.style.bottom = this.positionY + "vh";
+    this.bulletParent = document.getElementById("enemy");
+    this.bulletParent.appendChild(this.bulletDom);
+  }
+
+  moveDown(x, y) {
+    if (this.positionX > x) {
+      this.positionY -= 0.8;
+      this.positionX -= 0.5;
+      this.bulletDom.style.left = this.positionX + "vw";
+      this.bulletDom.style.bottom = this.positionY + "vh";
+    } else if (this.positionX < x) {
+      this.positionY -= 0.8;
+      this.positionX += 0.5;
+      this.bulletDom.style.left = this.positionX + "vw";
+      this.bulletDom.style.bottom = this.positionY + "vh";
+    } else {
+      this.positionY -= 0.8;
+      this.bulletDom.style.bottom = this.positionY + "vh";
+    }
   }
 }
 
@@ -212,4 +255,3 @@ class ExitDoor {
 }
 
 const newGame = new Game();
-

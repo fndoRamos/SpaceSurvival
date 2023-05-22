@@ -25,7 +25,8 @@ body {
 
 .bullet {
   background-color: red;
-  position: absolute;
+  border-radius: 50%;
+  position: fixed;
 }
 
 #exitDoor {
