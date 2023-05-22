@@ -1,27 +1,52 @@
 body {
-    padding: 0;
-    margin: 0;
+  padding: 0;
+  margin: 0;
 }
 
 #board {
-    background-color: rgb(161, 71, 40);
-    height: 100vh;
-    position: relative;
+  background-color: rgb(161, 71, 40);
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
 }
 
-#door {
-    background-color: black;
-    height: 10vh;
-    width: 4vw;
-    position: absolute;
-    right: 0;
-    bottom: 10vh;
+#player {
+  background-color: blue;
+  position: absolute;
+  text-align: center;
+  font-size: 10px;
 }
 
-.floor {
-    background-color: brown;
-    height: 10vh;
-    width: 100vw;
-    position: absolute;
-    bottom: 0;
+#enemy {
+  background-color: rgb(126, 166, 57);
+  position: absolute;
+  text-align: center;
+}
+
+.bullet {
+  background-color: red;
+  position: absolute;
+}
+
+#exitDoor {
+  background-color: black;
+  position: absolute;
+}
+
+#groundContainer {
+  background-color: rgb(45, 22, 22);
+  height: 15vh;
+  width: 100vw;
+  position: absolute;
+  bottom: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.groundBox {
+  background-color: rgb(80, 34, 26);
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  flex: 0 1 20vw;
 }
