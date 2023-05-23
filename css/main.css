@@ -28,6 +28,7 @@ body {
   background-color: red;
   border-radius: 50%;
   position: fixed;
+  transition: linear 100ms;
 }
 
 #exitDoor {

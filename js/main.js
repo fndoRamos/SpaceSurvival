@@ -1,3 +1,4 @@
+
 class Game {
   constructor() {
     this.newPlayer = null;
@@ -5,7 +6,11 @@ class Game {
     this.newEnemy = null;
     this.exitDoor = null;
     this.newBullet = null;
+    this.fallTimer = null;
+    this.isFfalling = true;
     this.bulletsArr = [];
+
+    
 
     this.startGame();
   }
@@ -17,37 +22,40 @@ class Game {
     this.exitDoor = new ExitDoor();
 
     this.eventListenerMove();
-    //this.newPlayer.fall();
+    this.fall();
 
     setTimeout(() => {
       setInterval(() => {
         this.newBullet = new Bullets();
         this.bulletsArr.push(this.newBullet);
-        console.log(this.bulletsArr);
+        //console.log(this.bulletsArr);
       }, 2000);
     }, 2500);
 
     setInterval(() => {
       this.bulletsArr.forEach((bulletElm) => {
         bulletElm.moveDown(this.newPlayer.positionX, this.newPlayer.positionY);
-        this.detectColisionWithPlayer(bulletElm);
+        this.detectBulletColisionWithPlayer(bulletElm);
         this.deleteBullets(bulletElm);
-      })
+      });
     }, 60);
-
   }
 
   eventListenerMove() {
     document.addEventListener("keydown", (e) => {
+      this.fall();
+      this.detectColisionPlayerWithGroundBox();
       if (e.code === "ArrowRight") {
         this.newPlayer.moveRigth();
         console.log(this.newPlayer);
         this.detectColisionExitDoor();
       } else if (e.code === "ArrowLeft") {
         this.newPlayer.moveLeft();
+        console.log(this.newPlayer);
         this.detectColisionExitDoor();
       } else if (e.code === "ArrowUp") {
         this.newPlayer.jump();
+        console.log(this.newPlayer);
       }
     });
   }
@@ -64,28 +72,72 @@ class Game {
     }
   }
 
-  detectColisionWithPlayer(bulletElm) {
+  fall() {
+    if (this.isFfalling) {
+      this.fallTimer = setInterval(() => {
+        this.newPlayer.positionY -= 1;
+        this.newPlayer.playerDom.style.bottom = this.newPlayer.positionY + "vh";
+        this.detectColisionPlayerWithGroundBox();
+
+        if (this.newPlayer.playerDom.style.bottom === 0 - this.newPlayer.height + "vh") {
+          clearInterval(this.fallTimer);
+          this.newPlayer.playerDom.remove();
+          this.isFfalling = false;
+          location.href = "./lvl3.html";
+        }
+      }, 20);
+    }
+  }
+
+  detectBulletColisionWithPlayer(bulletElm) {
     if (
       bulletElm.positionX < this.newPlayer.positionX + this.newPlayer.width &&
       bulletElm.positionX + bulletElm.width > this.newPlayer.positionX &&
       bulletElm.positionY < this.newPlayer.positionY + this.newPlayer.height &&
       bulletElm.height + bulletElm.positionY > this.newPlayer.positionY
     ) {
-      console.log("colision with player detected");
-      location.href = "./lvl3.html";
+      //console.log("colision with player detected");
+      //location.href = "./lvl3.html";
     }
   }
 
-  //detectColisionPlayerWithGroundBox() {
+  detectColisionPlayerWithGroundBox() {
+    //this.groundContainer = document.querySelector("#groundContainer")
+    this.groundBoxArr = document.querySelectorAll(".groundBox");
+    //console.log(this.groundContainer);
+    //console.log(this.groundBoxArr);
 
-  //}
+    this.groundBoxArr.forEach((boxElm) => {
+      this.boxHeightInVh = Math.round((boxElm.offsetHeight / window.innerHeight) * 100);
+      this.boxWidthInVw = Math.round((boxElm.offsetWidth / window.innerWidth) * 100);
+      this.boxPositionXInVw = Math.round((boxElm.offsetLeft / window.innerWidth) * 100);
+      this.boxPositionYInVh = Math.round((boxElm.offsetTop / window.innerHeight) * 100);
+      console.log(this.boxHeightInVh);
+      console.log(this.boxPositionYInVh);
+      console.log(this.boxWidthInVw);
+      console.log(this.boxPositionXInVw);
+
+      if (
+        (this.newPlayer.positionX + this.newPlayer.width / 2) < this.boxPositionXInVw + this.boxWidthInVw &&
+        this.newPlayer.positionX + this.newPlayer.width >= this.boxPositionXInVw &&
+        this.newPlayer.positionY <= this.boxPositionYInVh + this.boxHeightInVh &&
+        this.newPlayer.height + this.newPlayer.positionY >= this.boxPositionYInVh
+      ) {
+        console.log("colision with ground detected");
+        clearInterval(this.fallTimer);
+        this.isFfalling = false;
+      } else {
+        this.isFfalling = true;
+      }
+    });
+  }
 
   deleteBullets(bulletElm) {
     if (
-      bulletElm.positionY < 15 - bulletElm.height || 
-      bulletElm.positionX < 0 - bulletElm.width || 
-      bulletElm.positionX > 100 + bulletElm.width) {
-
+      bulletElm.positionY < 15 - bulletElm.height ||
+      bulletElm.positionX < 0 - bulletElm.width ||
+      bulletElm.positionX > 100 + bulletElm.width
+    ) {
       this.bulletsArr.shift();
       bulletElm.bulletDom.remove();
     }
@@ -94,8 +146,8 @@ class Game {
 
 class Player {
   constructor() {
-    this.positionX = 1;
-    this.positionY = 15;
+    this.positionX = 2;
+    this.positionY = 50;
     this.width = 2;
     this.height = 4;
     this.playerDom = null;
@@ -154,20 +206,6 @@ class Player {
       this.isJumping = true;
     }, 15);
   }
-  
-  fall() {
-    const fallTimer = setInterval(() => {
-      this.positionY -= 1;
-      this.playerDom.style.bottom = this.positionY + "vh";
-      if (this.playerDom.style.bottom === 0 - this.height + "vh") {
-        clearInterval(fallTimer);
-        this.playerDom.remove()
-        //location.href = "./lvl3.html";
-      }
-    }, 20)
-    
-  }
-  
 }
 
 class Enemy {
@@ -229,17 +267,17 @@ class Bullets {
 
   moveDown(x, y) {
     if (this.positionX > x) {
-      this.positionY -= 0.8;
+      this.positionY -= 0.7;
       this.positionX -= 0.5;
       this.bulletDom.style.left = this.positionX + "vw";
       this.bulletDom.style.bottom = this.positionY + "vh";
     } else if (this.positionX < x) {
-      this.positionY -= 0.8;
+      this.positionY -= 0.7;
       this.positionX += 0.5;
       this.bulletDom.style.left = this.positionX + "vw";
       this.bulletDom.style.bottom = this.positionY + "vh";
     } else {
-      this.positionY -= 0.8;
+      this.positionY -= 0.7;
       this.bulletDom.style.bottom = this.positionY + "vh";
     }
   }
