@@ -4,6 +4,7 @@ class Game {
     this.newGround = null;
     this.newEnemy = null;
     this.exitDoor = null;
+    this.newBullet = null;
     this.bulletsArr = [];
 
     this.startGame();
@@ -16,18 +17,21 @@ class Game {
     this.exitDoor = new ExitDoor();
 
     this.eventListenerMove();
+    //this.newPlayer.fall();
 
     setTimeout(() => {
       setInterval(() => {
         this.newBullet = new Bullets();
         this.bulletsArr.push(this.newBullet);
         console.log(this.bulletsArr);
-      }, 4000);
+      }, 2000);
     }, 2500);
 
     setInterval(() => {
       this.bulletsArr.forEach((bulletElm) => {
         bulletElm.moveDown(this.newPlayer.positionX, this.newPlayer.positionY);
+        this.detectColisionWithPlayer(bulletElm);
+        this.deleteBullets(bulletElm);
       })
     }, 60);
 
@@ -50,16 +54,40 @@ class Game {
 
   detectColisionExitDoor() {
     if (
-      this.exitDoor.positionX <
-        this.newPlayer.positionX + this.newPlayer.width &&
-      this.exitDoor.positionX + this.exitDoor.width >
-        this.newPlayer.positionX &&
-      this.exitDoor.positionY <
-        this.newPlayer.positionY + this.newPlayer.height &&
+      this.exitDoor.positionX < this.newPlayer.positionX + this.newPlayer.width &&
+      this.exitDoor.positionX + this.exitDoor.width > this.newPlayer.positionX &&
+      this.exitDoor.positionY < this.newPlayer.positionY + this.newPlayer.height &&
       this.exitDoor.height + this.exitDoor.positionY > this.newPlayer.positionY
     ) {
-      console.log("colision detected");
+      console.log("colision with door detected");
       location.href = "./lvl2.html";
+    }
+  }
+
+  detectColisionWithPlayer(bulletElm) {
+    if (
+      bulletElm.positionX < this.newPlayer.positionX + this.newPlayer.width &&
+      bulletElm.positionX + bulletElm.width > this.newPlayer.positionX &&
+      bulletElm.positionY < this.newPlayer.positionY + this.newPlayer.height &&
+      bulletElm.height + bulletElm.positionY > this.newPlayer.positionY
+    ) {
+      console.log("colision with player detected");
+      location.href = "./lvl3.html";
+    }
+  }
+
+  //detectColisionPlayerWithGroundBox() {
+
+  //}
+
+  deleteBullets(bulletElm) {
+    if (
+      bulletElm.positionY < 15 - bulletElm.height || 
+      bulletElm.positionX < 0 - bulletElm.width || 
+      bulletElm.positionX > 100 + bulletElm.width) {
+
+      this.bulletsArr.shift();
+      bulletElm.bulletDom.remove();
     }
   }
 }
@@ -126,6 +154,20 @@ class Player {
       this.isJumping = true;
     }, 15);
   }
+  
+  fall() {
+    const fallTimer = setInterval(() => {
+      this.positionY -= 1;
+      this.playerDom.style.bottom = this.positionY + "vh";
+      if (this.playerDom.style.bottom === 0 - this.height + "vh") {
+        clearInterval(fallTimer);
+        this.playerDom.remove()
+        //location.href = "./lvl3.html";
+      }
+    }, 20)
+    
+  }
+  
 }
 
 class Enemy {
