@@ -119,7 +119,7 @@ class Game {
 
       if (
         (this.newPlayer.positionX + this.newPlayer.width / 2) < this.boxPositionXInVw + this.boxWidthInVw &&
-        this.newPlayer.positionX + this.newPlayer.width >= this.boxPositionXInVw &&
+        this.newPlayer.positionX + this.newPlayer.width / 2 > this.boxPositionXInVw &&
         this.newPlayer.positionY <= this.boxPositionYInVh + this.boxHeightInVh &&
         this.newPlayer.height + this.newPlayer.positionY >= this.boxPositionYInVh
       ) {
@@ -146,7 +146,7 @@ class Game {
 
 class Player {
   constructor() {
-    this.positionX = 2;
+    this.positionX = 1;
     this.positionY = 50;
     this.width = 2;
     this.height = 4;
