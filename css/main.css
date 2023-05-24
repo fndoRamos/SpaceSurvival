@@ -16,12 +16,14 @@ body {
   text-align: center;
   font-size: 10px;
   z-index: 1;
+  transition: linear 100ms;
 }
 
 #enemy {
   background-color: rgb(126, 166, 57);
   position: absolute;
   text-align: center;
+  transition: linear 100ms;
 }
 
 .bullet {

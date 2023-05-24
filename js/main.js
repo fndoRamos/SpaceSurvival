@@ -1,4 +1,3 @@
-
 class Game {
   constructor() {
     this.newPlayer = null;
@@ -22,7 +21,7 @@ class Game {
     this.exitDoor = new ExitDoor();
 
     this.eventListenerMove();
-    this.fall();
+    //this.fall();
 
     setTimeout(() => {
       setInterval(() => {
@@ -43,21 +42,77 @@ class Game {
 
   eventListenerMove() {
     document.addEventListener("keydown", (e) => {
-      this.fall();
-      this.detectColisionPlayerWithGroundBox();
+      //this.detectColisionExitDoor();
+      //this.fall();
       if (e.code === "ArrowRight") {
-        this.newPlayer.moveRigth();
+        this.moveRigth();
         console.log(this.newPlayer);
-        this.detectColisionExitDoor();
+        
       } else if (e.code === "ArrowLeft") {
-        this.newPlayer.moveLeft();
+        this.moveLeft();
         console.log(this.newPlayer);
-        this.detectColisionExitDoor();
+        
       } else if (e.code === "ArrowUp") {
-        this.newPlayer.jump();
+        this.jump();
         console.log(this.newPlayer);
       }
     });
+  }
+
+  moveRigth() {
+    if (this.newPlayer.isGoingLeft) {
+      clearInterval(this.newPlayer.leftTimerId)
+      this.newPlayer.isGoingLeft = false;
+    }
+    this.newPlayer.isGoingRigth = true;
+    this.newPlayer.rightTimerId = setInterval(() => {
+      this.newPlayer.positionX += 1;
+      this.newPlayer.playerDom.style.left = this.newPlayer.positionX + "vw";
+      this.detectColisionPlayerWithGroundBox();
+      if (this.newPlayer.positionX >= 100 - this.newPlayer.width) {
+        clearInterval(this.newPlayer.rightTimerId);
+      }
+    }, 80)
+      
+
+  }
+
+  moveLeft() {
+    if (this.newPlayer.isGoingRigth) {
+      clearInterval(this.newPlayer.rightTimerId);
+      this.newPlayer.isGoingRigth = false;
+    }
+    this.newPlayer.isGoingLeft = true;
+    this.newPlayer.leftTimerId = setInterval(() => {
+      this.newPlayer.positionX -= 1;
+      this.newPlayer.playerDom.style.left = this.newPlayer.positionX + "vw";
+      this.detectColisionPlayerWithGroundBox();
+      if (this.newPlayer.positionX <= 0) {
+        clearInterval(this.newPlayer.leftTimerId);
+      }
+    }, 80)
+  }
+
+  jump() {
+    if (this.newPlayer.isJumping) {
+      return;
+    }
+    this.newPlayer.jumpUpTimerId = setInterval(() => {
+      if (this.newPlayer.positionY > 30) {
+        clearInterval(this.newPlayer.jumpUpTimerId);
+        this.newPlayer.jumpDownTimerId = setInterval(() => {
+          if (this.newPlayer.positionY === 30) {
+            clearInterval(this.newPlayer.jumpDownTimerId);
+            this.newPlayer.isJumping = false;
+          }
+          this.newPlayer.positionY -= 15;
+          this.newPlayer.playerDom.style.bottom = this.newPlayer.positionY + "vh";
+        }, 40)
+      }
+      this.newPlayer.isJumping = true;
+      this.newPlayer.positionY += 15;
+      this.newPlayer.playerDom.style.bottom = this.newPlayer.positionY + "vh";
+    }, 40)
   }
 
   detectColisionExitDoor() {
@@ -112,10 +167,10 @@ class Game {
       this.boxWidthInVw = Math.round((boxElm.offsetWidth / window.innerWidth) * 100);
       this.boxPositionXInVw = Math.round((boxElm.offsetLeft / window.innerWidth) * 100);
       this.boxPositionYInVh = Math.round((boxElm.offsetTop / window.innerHeight) * 100);
-      console.log(this.boxHeightInVh);
-      console.log(this.boxPositionYInVh);
-      console.log(this.boxWidthInVw);
-      console.log(this.boxPositionXInVw);
+      //console.log(this.boxHeightInVh);
+      //console.log(this.boxPositionYInVh);
+      //console.log(this.boxWidthInVw);
+      //console.log(this.boxPositionXInVw);
 
       if (
         (this.newPlayer.positionX + this.newPlayer.width / 2) < this.boxPositionXInVw + this.boxWidthInVw &&
@@ -126,8 +181,10 @@ class Game {
         console.log("colision with ground detected");
         clearInterval(this.fallTimer);
         this.isFfalling = false;
+        return;
       } else {
         this.isFfalling = true;
+        //this.fall(); 
       }
     });
   }
@@ -147,13 +204,19 @@ class Game {
 class Player {
   constructor() {
     this.positionX = 1;
-    this.positionY = 50;
+    this.positionY = 15;
     this.width = 2;
     this.height = 4;
     this.playerDom = null;
-    this.isJumping = false;
+    this.rightTimerId = null;
+    this.leftTimerId = null;
+    this.jumpUpTimerId = null;
+    this.jumpDownTimerId = null;
+    this.isGoingUp = false;
+    this.isGoingDown = false;
     this.isGoingLeft = false;
     this.isGoingRigth = false;
+    this.isJumping = false;
 
     this.createPlayer();
   }
@@ -168,43 +231,6 @@ class Player {
     this.playerDom.innerText = "P";
     this.playerParent = document.getElementById("board");
     this.playerParent.appendChild(this.playerDom);
-  }
-
-  moveRigth() {
-    if (this.positionX < 96) {
-      this.positionX += 1;
-      this.playerDom.style.left = this.positionX + "vw";
-    }
-  }
-
-  moveLeft() {
-    if (this.positionX > 0) {
-      this.positionX -= 1;
-      this.playerDom.style.left = this.positionX + "vw";
-    }
-  }
-
-  jump() {
-    let topJump = this.positionY + 15;
-    if (this.isJumping === true) {
-      return;
-    }
-    this.goingUpTimer = setInterval(() => {
-      if (this.positionY === topJump) {
-        clearInterval(this.goingUpTimer);
-        this.goingDownTimer = setInterval(() => {
-          if (this.positionY === 16) {
-            clearInterval(this.goingDownTimer);
-            this.isJumping = false;
-          }
-          this.positionY -= 1;
-          this.playerDom.style.bottom = this.positionY + "vh";
-        }, 15);
-      }
-      this.positionY += 1;
-      this.playerDom.style.bottom = this.positionY + "vh";
-      this.isJumping = true;
-    }, 15);
   }
 }
 
@@ -234,7 +260,7 @@ class Enemy {
 
     clearTimeout = enemyTimeOutID;
 
-    const enemyIntervalId = setInterval(() => {
+    setInterval(() => {
       if (this.enemyDom.style.bottom > 80 + "vh") {
         this.positionY -= 1;
         this.enemyDom.style.bottom = this.positionY + "vh";
