@@ -15,15 +15,12 @@ class Game {
     this.timeIdBullets3 = null;
     this.enemiesArr = [];
 
-    
-
     this.startGame();
   }
 
   startGame() {
     this.newPlayer = new Player();
     this.newGround = new Ground();
-    
 
     this.eventListenerMove();
 
@@ -32,13 +29,11 @@ class Game {
       this.enemiesArr.push(this.newEnemy);
       this.enemiesArr[i].positionX += this.newEnemy.positionX + 10;
       if (this.enemiesArr.length > 1)
-      this.enemiesArr[i].positionX += this.enemiesArr[i - 1].positionX + 20;
+        this.enemiesArr[i].positionX += this.enemiesArr[i - 1].positionX + 20;
       console.log(this.enemiesArr);
     }
 
-   
-
-                  //bullets for enemy1
+    //bullets for enemy1
     this.timeIdBullets1 = setTimeout(() => {
       setInterval(() => {
         this.newBullet1 = new Bullets1();
@@ -53,7 +48,7 @@ class Game {
         this.deleteBullets(bulletElm, index);
       });
     }, 60);
-                  //bullets for enemy2
+    //bullets for enemy2
     this.timeIdBullets2 = setTimeout(() => {
       setInterval(() => {
         this.newBullet2 = new Bullets2();
@@ -69,7 +64,7 @@ class Game {
       });
     }, 60);
     */
-                  //bullets for enemy3
+    //bullets for enemy3
     this.timeIdBullets3 = setTimeout(() => {
       setInterval(() => {
         this.newBullet3 = new Bullets3();
@@ -85,26 +80,22 @@ class Game {
       });
     }, 60);
     */
-    
-                //meteors start falling
+
+    //meteors start falling
     setTimeout(() => {
       setInterval(() => {
         this.newMeteor = new Meteor();
         this.meteorArr.push(this.newMeteor);
-        //console.log(this.meteorArr)
-      }, 3000);
+      }, 2000);
     }, 10000);
 
     setInterval(() => {
       this.meteorArr.forEach((meteorElm) => {
-        //console.log(this.meteorArr);
         meteorElm.moveDown();
         this.detectBulletColisionWithPlayer(meteorElm);
         this.deleteMeteors(meteorElm);
-      })
+      });
     }, 60);
-
-    
   }
 
   eventListenerMove() {
@@ -112,11 +103,9 @@ class Game {
       if (e.code === "ArrowRight") {
         this.newPlayer.moveRigth();
         console.log(this.newPlayer);
-        
       } else if (e.code === "ArrowLeft") {
         this.newPlayer.moveLeft();
         console.log(this.newPlayer);
-        
       } else if (e.code === "ArrowUp") {
         this.newPlayer.jump();
         console.log(this.newPlayer);
@@ -126,13 +115,13 @@ class Game {
 
   detectBulletColisionWithPlayer(bulletElm) {
     if (
-      bulletElm.positionX < this.newPlayer.positionX + this.newPlayer.width &&
-      bulletElm.positionX + bulletElm.width > this.newPlayer.positionX &&
-      bulletElm.positionY < this.newPlayer.positionY + this.newPlayer.height &&
-      bulletElm.height + bulletElm.positionY > this.newPlayer.positionY
+      bulletElm.positionX < this.newPlayer.positionX + (this.newPlayer.width / 2) &&
+      bulletElm.positionX + (bulletElm.width / 2) > this.newPlayer.positionX &&
+      bulletElm.positionY < this.newPlayer.positionY + (this.newPlayer.height / 2) &&
+      (bulletElm.height / 2) + bulletElm.positionY > this.newPlayer.positionY
     ) {
       console.log("colision with player detected");
-      //location.href = "./lvl3.html";
+      location.href = "./lvl3.html";
     }
   }
 
@@ -144,6 +133,9 @@ class Game {
     ) {
       this.bulletsArr.splice(index, 1);
       bulletElm.bulletDom.remove();
+      this.newGround.scoreValue = this.newGround.scoreValue + 20;
+      this.score = document.querySelector("#score");
+      this.score.innerText = `Score: ${this.newGround.scoreValue} points!`;
     }
   }
 
@@ -155,9 +147,11 @@ class Game {
     ) {
       this.meteorArr.splice(0, 1);
       meteorElm.meteorDom.remove();
+      this.newGround.scoreValue = this.newGround.scoreValue + 50;
+      this.score = document.querySelector("#score");
+      this.score.innerText = `Score: ${this.newGround.scoreValue} points!`;
     }
   }
-
 }
 
 class Player {
@@ -195,7 +189,7 @@ class Player {
       return;
     }
     if (this.isGoingLeft) {
-      clearInterval(this.leftTimerId)
+      clearInterval(this.leftTimerId);
       this.isGoingLeft = false;
     }
     this.isGoingRigth = true;
@@ -205,9 +199,7 @@ class Player {
       if (this.positionX >= 100 - this.width) {
         clearInterval(this.rightTimerId);
       }
-    }, 80)
-      
-
+    }, 80);
   }
 
   moveLeft() {
@@ -225,7 +217,7 @@ class Player {
       if (this.positionX <= 0) {
         clearInterval(this.leftTimerId);
       }
-    }, 80)
+    }, 80);
   }
 
   jump() {
@@ -242,12 +234,12 @@ class Player {
           }
           this.positionY -= 1;
           this.playerDom.style.bottom = this.positionY + "vh";
-        }, 20)
+        }, 20);
       }
       this.isJumping = true;
       this.positionY += 1;
       this.playerDom.style.bottom = this.positionY + "vh";
-    }, 20)
+    }, 20);
   }
 }
 
@@ -258,9 +250,8 @@ class Enemy {
     this.positionX = 0;
     this.positionY = 100 - this.height / 2;
     this.enemyDom = null;
-    this.index = index
+    this.index = index;
 
-     
     this.createEnemy();
   }
 
@@ -442,19 +433,28 @@ class Ground {
     this.height = 10;
     this.positionX = 0;
     this.positionY = 0;
-    this.boxesArr = [];
+    this.groundDom = null;
+    this.scoreDom = null;
+    this.scoreValue = 0;
 
     this.createGround();
+    this.createScore();
   }
 
   createGround() {
-    this.firstLayer = document.createElement("section");
-    this.firstLayer.id = "ground";
+    this.groundDom = document.createElement("div");
+    this.groundDom.id = "ground";
     this.groundParent = document.getElementById("board");
-    this.groundParent.appendChild(this.firstLayer);
+    this.groundParent.appendChild(this.groundDom);
+  }
+
+  createScore() {
+    this.scoreDom = document.createElement("span");
+    this.scoreDom.id = "score";
+    this.scoreDom.innerText = `Score: ${this.scoreValue} points!`;
+    this.scoreParent = document.getElementById("ground");
+    this.scoreParent.appendChild(this.scoreDom);
   }
 }
-
-
 
 const newGame = new Game();
