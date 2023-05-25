@@ -10,10 +10,12 @@ class Game {
     this.bulletsArr2 = [];
     this.bulletsArr3 = [];
     this.meteorArr = [];
+    this.rockArr = [];
+    this.enemiesArr = [];
     this.timeIdBullets1 = null;
     this.timeIdBullets2 = null;
     this.timeIdBullets3 = null;
-    this.enemiesArr = [];
+    
 
     this.startGame();
   }
@@ -27,7 +29,7 @@ class Game {
     for (let i = 0; i < 3; i++) {
       this.newEnemy = new Enemy(i);
       this.enemiesArr.push(this.newEnemy);
-      this.enemiesArr[i].positionX += this.newEnemy.positionX + 10;
+      this.enemiesArr[i].positionX += this.newEnemy.positionX + 13;
       if (this.enemiesArr.length > 1)
         this.enemiesArr[i].positionX += this.enemiesArr[i - 1].positionX + 20;
       console.log(this.enemiesArr);
@@ -38,7 +40,7 @@ class Game {
       setInterval(() => {
         this.newBullet1 = new Bullets1();
         this.bulletsArr.push(this.newBullet1);
-      }, 2000);
+      }, 3500);
     }, 3500);
 
     setInterval(() => {
@@ -53,33 +55,15 @@ class Game {
       setInterval(() => {
         this.newBullet2 = new Bullets2();
         this.bulletsArr.push(this.newBullet2);
-      }, 2000);
+      }, 4000);
     }, 4500);
-    /*
-    setInterval(() => {
-      this.bulletsArr.forEach((bulletElm, index) => {
-        bulletElm.moveDown(this.newPlayer.positionX);
-        this.detectBulletColisionWithPlayer(bulletElm);
-        this.deleteBullets(bulletElm, index);
-      });
-    }, 60);
-    */
     //bullets for enemy3
     this.timeIdBullets3 = setTimeout(() => {
       setInterval(() => {
         this.newBullet3 = new Bullets3();
         this.bulletsArr.push(this.newBullet3);
-      }, 2000);
+      }, 3000);
     }, 5500);
-    /*
-    setInterval(() => {
-      this.bulletsArr.forEach((bulletElm, index) => {
-        bulletElm.moveDown(this.newPlayer.positionX);
-        this.detectBulletColisionWithPlayer(bulletElm);
-        this.deleteBullets(bulletElm, index);
-      });
-    }, 60);
-    */
 
     //meteors start falling
     setTimeout(() => {
@@ -87,13 +71,29 @@ class Game {
         this.newMeteor = new Meteor();
         this.meteorArr.push(this.newMeteor);
       }, 2000);
-    }, 10000);
+    }, 15000);
 
     setInterval(() => {
       this.meteorArr.forEach((meteorElm) => {
         meteorElm.moveDown();
         this.detectBulletColisionWithPlayer(meteorElm);
         this.deleteMeteors(meteorElm);
+      });
+    }, 60);
+
+    //rocks start falling
+    setTimeout(() => {
+      setInterval(() => {
+        this.newRock = new Rock();
+        this.rockArr.push(this.newRock);
+      }, 2000);
+    }, 30000);
+
+    setInterval(() => {
+      this.rockArr.forEach((rockElm) => {
+        rockElm.moveLeft();
+        this.detectBulletColisionWithPlayer(rockElm);
+        this.deleteRocks(rockElm);
       });
     }, 60);
   }
@@ -121,7 +121,7 @@ class Game {
       (bulletElm.height / 2) + bulletElm.positionY > this.newPlayer.positionY
     ) {
       console.log("colision with player detected");
-      location.href = "./lvl3.html";
+      location.href = "./gameover.html";
     }
   }
 
@@ -152,12 +152,26 @@ class Game {
       this.score.innerText = `Score: ${this.newGround.scoreValue} points!`;
     }
   }
+
+  deleteRocks(rockElm) {
+    if (
+      rockElm.positionY < 8 - rockElm.height ||
+      rockElm.positionX < 0 - rockElm.width ||
+      rockElm.positionX > 100 + rockElm.width
+    ) {
+      this.rockArr.splice(0, 1);
+      rockElm.rockDom.remove();
+      this.newGround.scoreValue = this.newGround.scoreValue + 50;
+      this.score = document.querySelector("#score");
+      this.score.innerText = `Score: ${this.newGround.scoreValue} points!`;
+    }
+  }
 }
 
 class Player {
   constructor() {
-    this.width = 2;
-    this.height = 4;
+    this.width = 5;
+    this.height = 8;
     this.positionX = 50 - this.width / 2;
     this.positionY = 8;
     this.playerDom = null;
@@ -179,7 +193,6 @@ class Player {
     this.playerDom.style.width = this.width + "vw";
     this.playerDom.style.left = this.positionX + "vw";
     this.playerDom.style.bottom = this.positionY + "vh";
-    this.playerDom.innerText = "P";
     this.playerParent = document.getElementById("board");
     this.playerParent.appendChild(this.playerDom);
   }
@@ -245,8 +258,8 @@ class Player {
 
 class Enemy {
   constructor(index) {
-    this.width = 6;
-    this.height = 4;
+    this.width = 8;
+    this.height = 14;
     this.positionX = 0;
     this.positionY = 100 - this.height / 2;
     this.enemyDom = null;
@@ -263,7 +276,6 @@ class Enemy {
       this.enemyDom.style.width = this.width + "vw";
       this.enemyDom.style.left = this.positionX + "vw";
       this.enemyDom.style.bottom = this.positionY + "vh";
-      this.enemyDom.innerText = "E";
       this.enemyParent = document.getElementById("board");
       this.enemyParent.appendChild(this.enemyDom);
     }, 3000);
@@ -281,10 +293,10 @@ class Enemy {
 
 class Bullets1 {
   constructor() {
-    this.width = 1;
-    this.height = 2;
-    this.positionX = 13 - this.width / 2;
-    this.positionY = 78;
+    this.width = 2;
+    this.height = 3;
+    this.positionX = 17 - this.width / 2;
+    this.positionY = 82;
     this.bulletDom = null;
 
     this.createBullets();
@@ -321,10 +333,10 @@ class Bullets1 {
 
 class Bullets2 {
   constructor() {
-    this.width = 1;
-    this.height = 2;
-    this.positionX = 43 - this.width / 2;
-    this.positionY = 78;
+    this.width = 2;
+    this.height = 3;
+    this.positionX = 50 - this.width / 2;
+    this.positionY = 82;
     this.bulletDom = null;
 
     this.createBullets();
@@ -361,10 +373,10 @@ class Bullets2 {
 
 class Bullets3 {
   constructor() {
-    this.width = 1;
-    this.height = 2;
-    this.positionX = 73 - this.width / 2;
-    this.positionY = 78;
+    this.width = 2;
+    this.height = 3;
+    this.positionX = 82 - this.width / 2;
+    this.positionY = 82;
     this.bulletDom = null;
 
     this.createBullets();
@@ -401,8 +413,8 @@ class Bullets3 {
 
 class Meteor {
   constructor() {
-    this.width = 4;
-    this.height = 6;
+    this.width = 5;
+    this.height = 10;
     this.positionX = Math.floor(Math.random() * (100 - this.width) + 1);
     this.positionY = 100 - this.height;
     this.meteorDom = null;
@@ -424,6 +436,34 @@ class Meteor {
   moveDown() {
     this.positionY -= 2;
     this.meteorDom.style.bottom = this.positionY + "vh";
+  }
+}
+
+class Rock {
+  constructor() {
+    this.width = 5;
+    this.height = 10;
+    this.positionX = 100;
+    this.positionY = Math.floor(Math.random() * (50 - this.width) + 1);
+    this.rockDom = null;
+
+    this.createRock();
+  }
+
+  createRock() {
+    this.rockDom = document.createElement("div");
+    this.rockDom.className = "rock";
+    this.rockDom.style.height = this.height + "vh";
+    this.rockDom.style.width = this.width + "vw";
+    this.rockDom.style.left = this.positionX + "vw";
+    this.rockDom.style.bottom = this.positionY + "vh";
+    this.rockParent = document.getElementById("board");
+    this.rockParent.appendChild(this.rockDom);
+  }
+
+  moveLeft() {
+    this.positionX -= 2;
+    this.rockDom.style.left = this.positionX + "vw";
   }
 }
 

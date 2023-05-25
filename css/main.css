@@ -4,6 +4,10 @@ body {
 }
 
 #board {
+  background-image: url(../images/backgriound.png);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
   background-color: rgb(161, 71, 40);
   height: 100vh;
   position: relative;
@@ -11,37 +15,56 @@ body {
 }
 
 #player {
-  background-color: blue;
+  background-image: url(../images/player.png);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
   position: absolute;
-  text-align: center;
-  font-size: 10px;
   z-index: 1;
   transition: linear 100ms;
 }
 
 #enemy0, #enemy1, #enemy2 {
-  background-color: rgb(126, 166, 57);
+  background-image: url(../images/spaceship.png);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
   position: absolute;
-  text-align: center;
   transition: linear 100ms;
 }
 
 .bullet {
-  background-color: red;
+  background-image: url(../images/bullet.png);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
   border-radius: 50%;
   position: fixed;
   transition: linear 100ms;
 }
 
 .meteor {
-  background-color: black;
+  background-image: url(../images/meteor.png);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-radius: 30%;
+  position: fixed;
+  transition: linear 100ms;
+}
+
+.rock {
+  background-image: url(../images/rock.png);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
   border-radius: 30%;
   position: fixed;
   transition: linear 100ms;
 }
 
 #ground {
-  background-color: rgb(45, 22, 22);
+  
   height: 10vh;
   width: 100vw;
   position: absolute;
@@ -49,14 +72,14 @@ body {
 }
 
 #score {
-  background-color: rgb(58, 58, 119);
+  background-color: rgb(54, 3, 3);
   height: 10vh;
   position: relative;
   text-align: center;
   left: 44%;
-  top: 50%;
+  top: 40%;
   font-size: 20px;
-  border: 1px solid greenyellow;
+  border: 2px solid rgb(233, 106, 15);
   border-radius: 3px;
-  color: rgb(107, 112, 45);
+  color: rgb(243, 13, 13);
 }
