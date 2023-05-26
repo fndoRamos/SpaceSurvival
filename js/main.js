@@ -40,8 +40,8 @@ class Game {
       setInterval(() => {
         this.newBullet1 = new Bullets1();
         this.bulletsArr.push(this.newBullet1);
-      }, 3500);
-    }, 3500);
+      }, 3000);
+    }, 2500);
 
     setInterval(() => {
       this.bulletsArr.forEach((bulletElm, index) => {
@@ -56,21 +56,21 @@ class Game {
         this.newBullet2 = new Bullets2();
         this.bulletsArr.push(this.newBullet2);
       }, 4000);
-    }, 4500);
+    }, 3500);
     //bullets for enemy3
     this.timeIdBullets3 = setTimeout(() => {
       setInterval(() => {
         this.newBullet3 = new Bullets3();
         this.bulletsArr.push(this.newBullet3);
       }, 3000);
-    }, 5500);
+    }, 6000);
 
     //meteors start falling
     setTimeout(() => {
       setInterval(() => {
         this.newMeteor = new Meteor();
         this.meteorArr.push(this.newMeteor);
-      }, 2000);
+      }, 1500);
     }, 15000);
 
     setInterval(() => {
@@ -161,7 +161,7 @@ class Game {
     ) {
       this.rockArr.splice(0, 1);
       rockElm.rockDom.remove();
-      this.newGround.scoreValue = this.newGround.scoreValue + 50;
+      this.newGround.scoreValue = this.newGround.scoreValue + 100;
       this.score = document.querySelector("#score");
       this.score.innerText = `Score: ${this.newGround.scoreValue} points!`;
     }

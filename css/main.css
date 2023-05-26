@@ -21,7 +21,7 @@ body {
   background-size: cover;
   position: absolute;
   z-index: 1;
-  transition: linear 100ms;
+  transition: linear 80ms;
 }
 
 #enemy0, #enemy1, #enemy2 {
