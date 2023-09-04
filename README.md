@@ -23,5 +23,5 @@ and high speed winds can trhow rocks at you.
 
 # DEMO
 
-[Give it a try](https://fndoramos.github.io/Project1-Game-OOP-DOM/).
+[Give it a try](https://fndoramos.github.io/SpaceSurvival/).
 
